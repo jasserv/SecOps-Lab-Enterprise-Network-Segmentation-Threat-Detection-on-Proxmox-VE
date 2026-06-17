@@ -45,18 +45,18 @@ The infrastructure utilizes explicit hardware/software isolation via distinct vi
 *The following artifacts validate the foundational configuration of the hypervisor and the perimeter gateway.*
 
 **1. Hypervisor Storage Optimization**
-* **Artifact:** `https://kommodo.ai/i/ZZhxYJR1mHpyOs23dn7u`
+* **Artifact:** https://kommodo.ai/i/ZZhxYJR1mHpyOs23dn7u
 * **Context:** To ensure the longevity and performance of the host's 256GB NVMe SSD, the OPNsense virtual disk was configured with the `Discard` flag. This allows the guest OS to issue TRIM commands through to the hypervisor, preventing storage exhaustion and maintaining optimal write speeds on flash media.
 
 **2. Multi-Homed Perimeter Gateway Configuration**
-* **Artifact:** `https://kommodo.ai/i/iGI1vOXQvbLCaAZVBBMY`
+* **Artifact:** https://kommodo.ai/i/iGI1vOXQvbLCaAZVBBMY
 * **Context:** OPNsense was deployed as the edge firewall with three distinct virtual network interfaces. Consumer-grade defaults were discarded in favor of enterprise routing principles:
   * **WAN (`vtnet0`):** Upstream DHCP
   * **LAN (`vtnet1`):** `172.16.1.1/24` (Attacker Gateway)
   * **OPT1 (`vtnet2`):** `10.0.0.1/24` (DMZ Gateway)
 
 **3. Virtual Switching Fabric Map**
-* **Artifact:** `https://kommodo.ai/i/VUlotei5US334yKTBsig`
+* **Artifact:** https://kommodo.ai/i/VUlotei5US334yKTBsig
 * **Context:** This map validates the logical isolation of the environment. Traffic between the Attacker Zone, the DMZ, and the physical internet is strictly enforced via the Proxmox Linux Bridges (`vmbr0`, `vmbr1`, `vmbr2`, `vmbr3`), ensuring no internal cross-talk bypasses the firewall inspection engines.
 
 ## 🚀 Update: Internal Firewall & Segmentation Completed 
