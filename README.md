@@ -58,3 +58,8 @@ The infrastructure utilizes explicit hardware/software isolation via distinct vi
 **3. Virtual Switching Fabric Map**
 * **Artifact:** `https://kommodo.ai/i/VUlotei5US334yKTBsig`
 * **Context:** This map validates the logical isolation of the environment. Traffic between the Attacker Zone, the DMZ, and the physical internet is strictly enforced via the Proxmox Linux Bridges (`vmbr0`, `vmbr1`, `vmbr2`, `vmbr3`), ensuring no internal cross-talk bypasses the firewall inspection engines.
+
+* VM Inventory: https://kommodo.ai/i/Jx9oinKOw9MJlIOmZyxd
+* Kali ip check https://kommodo.ai/i/bHlK36QchzfNsp1Wo26s
+* Ubuntu check : https://kommodo.ai/i/NcG7yHqfxoK66h0CwoPU
+* Fortigate ports: https://kommodo.ai/i/SicRvzn9wJYDs655q3Wq
