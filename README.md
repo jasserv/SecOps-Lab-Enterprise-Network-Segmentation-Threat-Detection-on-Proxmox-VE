@@ -72,19 +72,19 @@ The infrastructure utilizes explicit hardware/software isolation via distinct vi
 *The following artifacts validate the deployment of the internal security boundary and the finalization of L3 routing across all isolated virtual network segments.*
 
 **1. Proxmox Hypervisor Inventory**
-* **Artifact:** ![VM Inventory](https://kommodo.ai/i/Jx9oinKOw9MJlIOmZyxd)
+* **Artifact:** : https://kommodo.ai/i/Jx9oinKOw9MJlIOmZyxd
 * **Context:** All four endpoints are successfully provisioned and bound to their respective virtual bridges (`vmbr1`, `vmbr2`, `vmbr3`), ensuring complete collision domain isolation.
 
 **2. Internal Firewall Interface Mapping (FortiGate)**
-* **Artifact:** ![Fortigate Ports](https://kommodo.ai/i/SicRvzn9wJYDs655q3Wq)
+* **Artifact:** : https://kommodo.ai/i/SicRvzn9wJYDs655q3Wq
 * **Context:** A FortiOS 8.0 KVM appliance was deployed and restricted to 1 vCPU and 2048MB RAM to comply with licensing. Dual-homed routing was established with `port1` handling the DMZ (`10.0.0.2`) and `port2` acting as the Corporate Core gateway (`10.50.0.1`).
 
 **3. L2/L3 Attacker Zone Verification (Kali Linux)**
-* **Artifact:** ![Kali IP Check](https://kommodo.ai/i/bHlK36QchzfNsp1Wo26s)
+* **Artifact:** : https://kommodo.ai/i/bHlK36QchzfNsp1Wo26s
 * **Context:** The Kali Linux attacker endpoint successfully resolves the OPNsense gateway MAC (`ip neighbor`) and achieves 0% ICMP packet loss to the perimeter firewall (`172.16.1.1`).
 
 **4. Internal Path Verification (Ubuntu SIEM)**
-* **Artifact:** ![Ubuntu Check](https://kommodo.ai/i/NcG7yHqfxoK66h0CwoPU)
+* **Artifact:** : https://kommodo.ai/i/NcG7yHqfxoK66h0CwoPU
 * **Context:** Structural transport is verified. ICMP transit successfully routes from the deep Corporate Zone (`10.50.0.10`) to the FortiGate interior gateway interface (`10.50.0.1`).
 
 ---
