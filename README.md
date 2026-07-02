@@ -28,71 +28,362 @@ The infrastructure utilizes explicit hardware/software isolation via distinct vi
 
 ---
 
-## Lab Component Inventory
+# Enterprise Cybersecurity Homelab
 
-| VM Name | Role | OS | vCPU | RAM | Assigned Bridges |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **OPNsense** | Perimeter Firewall | FreeBSD (UFS) | 2 Cores | 2 GB | `vmbr0` (WAN), `vmbr1` (LAN/Attacker), `vmbr2` (OPT1/DMZ) |
-| **FortiGate VM** | Internal Firewall | FortiOS | 1 Core | 2 GB | `vmbr2` (DMZ), `vmbr3` (CORP) |
-| **Ubuntu Server** | SIEM / NIDS | Ubuntu Server LTS | 4 Cores | 12 GB | `vmbr3` (CORP) |
-| **Kali Linux** | Attacker | Kali Linux | 2 Cores | 4 GB | `vmbr1` (Attacker) |
+> A production-inspired enterprise cybersecurity homelab built on **Proxmox VE** featuring layered firewall architecture, network segmentation, virtualization, and centralized security monitoring. This project is designed to simulate an enterprise environment for learning **Firewall Engineering, Network Security, Blue Team Operations, and SOC Engineering**.
 
 ---
 
-## Project Milestones & Artifacts
+## 📌 Project Overview
 
-### Day 1: Host Infrastructure & Perimeter Setup
-*The following artifacts validate the foundational configuration of the hypervisor and the perimeter gateway.*
+This project documents the design and deployment of a multi-tiered enterprise cybersecurity homelab. The lab follows industry best practices by implementing a layered security architecture with multiple network zones protected by dedicated firewalls.
 
-**1. Hypervisor Storage Optimization**
-* **Artifact:** https://kommodo.ai/i/ZZhxYJR1mHpyOs23dn7u
-* **Context:** To ensure the longevity and performance of the host's 256GB NVMe SSD, the OPNsense virtual disk was configured with the `Discard` flag. This allows the guest OS to issue TRIM commands through to the hypervisor, preventing storage exhaustion and maintaining optimal write speeds on flash media.
-
-**2. Multi-Homed Perimeter Gateway Configuration**
-* **Artifact:** https://kommodo.ai/i/iGI1vOXQvbLCaAZVBBMY
-* **Context:** OPNsense was deployed as the edge firewall with three distinct virtual network interfaces. Consumer-grade defaults were discarded in favor of enterprise routing principles:
-  * **WAN (`vtnet0`):** Upstream DHCP
-  * **LAN (`vtnet1`):** `172.16.1.1/24` (Attacker Gateway)
-  * **OPT1 (`vtnet2`):** `10.0.0.1/24` (DMZ Gateway)
-
-**3. Virtual Switching Fabric Map**
-* **Artifact:** https://kommodo.ai/i/VUlotei5US334yKTBsig
-* **Context:** This map validates the logical isolation of the environment. Traffic between the Attacker Zone, the DMZ, and the physical internet is strictly enforced via the Proxmox Linux Bridges (`vmbr0`, `vmbr1`, `vmbr2`, `vmbr3`), ensuring no internal cross-talk bypasses the firewall inspection engines.
-
-## 🚀 Update: Internal Firewall & Segmentation Completed 
-
-**Milestone Reached:** Successfully deployed the internal security boundary and finalized L3 routing across all isolated virtual network segments (Attacker, DMZ, and Corporate Core).
-
-**Key Additions:**
-* **FortiGate KVM Deployment (VM 102):** Ingested and configured a FortiOS 8.0 virtual appliance via Proxmox CLI. Successfully restricted compute resources (1 vCPU, 2048MB RAM) to comply with the strict Fortinet evaluation license.
-* **Dual-Homed Routing:** Bridged the `vmbr2` (DMZ) and `vmbr3` (Corporate) networks, allowing the FortiGate to act as the central L3 gateway for internal traffic.
-* **Network Verification:** Verified 100% ICMP transit from the deep corporate zone (Ubuntu SIEM) -> through the FortiGate -> through the OPNsense Perimeter -> out to the external internet (`8.8.8.8`).
-
-### Internal Firewall & Corporate Zone Segmentation
-*The following artifacts validate the deployment of the internal security boundary and the finalization of L3 routing across all isolated virtual network segments.*
-
-**1. Proxmox Hypervisor Inventory**
-* **Artifact:** : https://kommodo.ai/i/Jx9oinKOw9MJlIOmZyxd
-* **Context:** All four endpoints are successfully provisioned and bound to their respective virtual bridges (`vmbr1`, `vmbr2`, `vmbr3`), ensuring complete collision domain isolation.
-
-**2. Internal Firewall Interface Mapping (FortiGate)**
-* **Artifact:** : https://kommodo.ai/i/SicRvzn9wJYDs655q3Wq
-* **Context:** A FortiOS 8.0 KVM appliance was deployed and restricted to 1 vCPU and 2048MB RAM to comply with licensing. Dual-homed routing was established with `port1` handling the DMZ (`10.0.0.2`) and `port2` acting as the Corporate Core gateway (`10.50.0.1`).
-
-**3. L2/L3 Attacker Zone Verification (Kali Linux)**
-* **Artifact:** : https://kommodo.ai/i/bHlK36QchzfNsp1Wo26s
-* **Context:** The Kali Linux attacker endpoint successfully resolves the OPNsense gateway MAC (`ip neighbor`) and achieves 0% ICMP packet loss to the perimeter firewall (`172.16.1.1`).
-
-**4. Internal Path Verification (Ubuntu SIEM)**
-* **Artifact:** : https://kommodo.ai/i/NcG7yHqfxoK66h0CwoPU
-* **Context:** Structural transport is verified. ICMP transit successfully routes from the deep Corporate Zone (`10.50.0.10`) to the FortiGate interior gateway interface (`10.50.0.1`).
+The environment is continuously expanded to include intrusion detection, security monitoring, log management, and attack simulation.
 
 ---
 
-## Next Steps
-* Configure outbound IPv4 security policies via the FortiGate Web GUI.
-* Initialize the Ubuntu SIEM (`101`) OS updates and data ingestion pipelines.
+# 🎯 Objectives
 
-**Next Steps:**
-- Configure outbound IPv4 security policies via the FortiGate Web GUI.
-- Initialize the Ubuntu SIEM (`101`) data ingestion pipelines.
+- Design an enterprise-inspired segmented network.
+- Deploy a dual-firewall architecture.
+- Separate Attacker, DMZ, and Corporate networks.
+- Configure Layer 3 routing between isolated segments.
+- Implement outbound NAT and secure internet access.
+- Deploy centralized logging and SIEM.
+- Implement IDS/IPS for threat detection.
+- Simulate enterprise attack and defense scenarios.
+
+---
+
+# 🏗️ Current Architecture
+
+```
+                               INTERNET
+                                   │
+                           Home Router
+                                   │
+                            vmbr0 (WAN)
+                                   │
+                          +----------------+
+                          |    OPNsense    |
+                          | Perimeter FW   |
+                          +----------------+
+                           │            │
+             vmbr1         │            │ vmbr2
+        Attacker Zone      │           DMZ
+        172.16.1.0/24       │      10.0.0.0/24
+                           │
+                      Kali Linux
+                           │
+                     Ubuntu SIEM
+                    (10.0.0.10/24)
+                           │
+                     +---------------+
+                     |   FortiGate   |
+                     | Internal FW   |
+                     +---------------+
+                    10.0.0.2
+                    10.50.10.1
+                           │
+                    vmbr3 Corporate
+                    10.50.10.0/24
+                           │
+                     Ubuntu-FG
+                   (10.50.10.10)
+```
+
+---
+
+# 🖥️ Hypervisor
+
+- **Platform:** Proxmox VE
+- **Virtualization:** KVM
+- **Virtual Switching:** Linux Bridges
+- **Storage:** SSD optimized with TRIM (Discard)
+
+---
+
+# 🌐 Network Layout
+
+| Network | Address | Purpose |
+|----------|----------|----------|
+| WAN | DHCP | Internet Access |
+| Attacker Zone | 172.16.1.0/24 | Offensive Security |
+| DMZ | 10.0.0.0/24 | Security Infrastructure |
+| Corporate | 10.50.10.0/24 | Internal Hosts |
+
+---
+
+# 💻 Virtual Machines
+
+| Virtual Machine | Role | IP Address |
+|-----------------|------|------------|
+| OPNsense | Perimeter Firewall | WAN / 172.16.1.1 / 10.0.0.1 |
+| FortiGate VM | Internal Firewall | 10.0.0.2 / 10.50.10.1 |
+| Kali Linux | Attacker Machine | 172.16.1.x |
+| Ubuntu SIEM | SIEM Server | 10.0.0.10 |
+| Ubuntu-FG | Corporate Endpoint | 10.50.10.10 |
+
+---
+
+# 🔥 Firewall Architecture
+
+## OPNsense (Perimeter Firewall)
+
+Responsibilities
+
+- WAN Gateway
+- NAT
+- Internet Access
+- Static Routing
+- Gateway for Attacker Network
+- Gateway for DMZ
+
+---
+
+## FortiGate (Internal Firewall)
+
+Responsibilities
+
+- Internal Layer 3 Routing
+- Corporate Gateway
+- Internal Segmentation
+- Future Security Policies
+- Future IPS Policies
+
+---
+
+# 📡 Routing Flow
+
+```
+Corporate Host
+      │
+      ▼
+FortiGate
+      │
+      ▼
+OPNsense
+      │
+      ▼
+Internet
+```
+
+---
+
+# ✅ Completed Features
+
+## Phase 1 – Infrastructure
+
+- [x] Installed Proxmox VE
+- [x] Configured Linux Bridges
+- [x] Optimized VM storage using TRIM
+- [x] Installed OPNsense
+- [x] Configured WAN
+- [x] Configured LAN
+- [x] Configured OPT1
+- [x] Verified Internet Connectivity
+
+---
+
+## Phase 2 – Internal Security
+
+- [x] Installed FortiGate VM
+- [x] Configured dual-homed interfaces
+- [x] Created Corporate Network
+- [x] Added Ubuntu-FG
+- [x] Moved Ubuntu SIEM to DMZ
+- [x] Updated Corporate addressing scheme
+- [x] Configured Manual Outbound NAT
+- [x] Verified Layer 2 connectivity
+- [x] Verified Layer 3 routing
+- [x] Verified Internet Connectivity
+- [x] Verified DNS Resolution
+
+---
+
+# 🔍 Validation
+
+The following tests have been successfully completed.
+
+| Validation | Status |
+|------------|--------|
+| Layer 2 Connectivity | ✅ |
+| Layer 3 Routing | ✅ |
+| Gateway Reachability | ✅ |
+| Internet Access | ✅ |
+| ICMP Testing | ✅ |
+| DNS Resolution | ✅ |
+| Outbound NAT | ✅ |
+| Cross-Network Routing | ✅ |
+
+---
+
+# ⚠ Challenges Encountered
+
+## 1. FortiGate Firmware Compatibility
+
+### Issue
+
+The initial FortiOS deployment (v8.0.0) repeatedly logged out after authentication via the web interface.
+
+### Resolution
+
+- Researched supported FortiGate KVM images.
+- Migrated to the VM64 KVM appliance.
+- Downgraded to FortiOS 7.6.7.
+- Successfully restored stable GUI access.
+
+---
+
+## 2. Outbound NAT
+
+### Issue
+
+The Corporate network was unable to access external resources despite successful routing.
+
+### Resolution
+
+Configured Manual Outbound NAT in OPNsense.
+
+Source Network
+
+```
+10.50.10.0/24
+```
+
+Translation Interface
+
+```
+WAN
+```
+
+Translation Target
+
+```
+WAN Address
+```
+
+Result
+
+All hosts successfully reach external networks and resolve DNS.
+
+---
+
+# 🚀 Roadmap
+
+## Phase 3 – Security Monitoring
+
+- [ ] Install Wazuh Manager
+- [ ] Install Wazuh Agent
+- [ ] Configure Log Collection
+- [ ] Linux Log Monitoring
+
+---
+
+## Phase 4 – Intrusion Detection
+
+- [ ] Install Suricata
+- [ ] Configure IDS
+- [ ] Configure IPS
+- [ ] Custom Detection Rules
+- [ ] Alert Validation
+
+---
+
+## Phase 5 – Enterprise Infrastructure
+
+- [ ] Windows Server
+- [ ] Active Directory
+- [ ] DNS
+- [ ] DHCP
+- [ ] Group Policy
+- [ ] Domain Joined Endpoints
+
+---
+
+## Phase 6 – Blue Team Operations
+
+- [ ] Attack Simulation
+- [ ] MITRE ATT&CK Mapping
+- [ ] Threat Hunting
+- [ ] Incident Response
+- [ ] Security Monitoring
+
+---
+
+# 🧰 Technologies
+
+- Proxmox VE
+- OPNsense
+- FortiGate VM
+- Ubuntu Server
+- Kali Linux
+- Linux Bridges
+- KVM Virtualization
+- Static Routing
+- Manual Outbound NAT
+
+### Planned
+
+- Wazuh
+- Suricata
+- Windows Server
+- Active Directory
+- Sysmon
+- Zeek
+
+---
+
+# 📂 Repository Structure
+
+```
+Enterprise-Cybersecurity-Homelab/
+│
+├── README.md
+│
+├── diagrams/
+│   ├── topology.png
+│   ├── architecture.png
+│   └── routing.png
+│
+├── screenshots/
+│
+├── docs/
+│   ├── Build-Logs/
+│   ├── Firewall-Configs/
+│   ├── Routing/
+│   └── Validation/
+│
+└── assets/
+```
+
+---
+
+# 📖 Learning Outcomes
+
+This homelab demonstrates practical experience with:
+
+- Enterprise Network Design
+- Firewall Engineering
+- Network Segmentation
+- Virtualization
+- Routing
+- NAT
+- Linux Administration
+- Security Architecture
+- Infrastructure Troubleshooting
+- Enterprise Documentation
+
+---
+
+# 👨‍💻 Author
+
+**Jasser Vergara**
+
+Cybersecurity • Firewall Engineering • Network Security • Blue Team • SOC • Homelab Enthusiast
+
+---
+
+## ⭐ Support
+
+If you found this project helpful or interesting, consider giving the repository a **Star** to follow future updates as the lab evolves into a full enterprise Security Operations Center (SOC) environment.
