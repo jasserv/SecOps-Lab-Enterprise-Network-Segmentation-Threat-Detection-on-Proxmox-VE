@@ -1,3 +1,4 @@
+<img width="492" height="492" alt="Topology drawio" src="https://github.com/user-attachments/assets/8a23df8d-3fe6-447e-8a3f-c97119ff668c" />
 # SecOps-Lab-Enterprise-Network-Segmentation-Threat-Detection-on-Proxmox-VE
 Built a segmented enterprise security lab on Proxmox VE using OPNsense, FortiGate-VM, Suricata IDS, and Wazuh SIEM. Simulated real attacks from Kali Linux across isolated network zones, automated alert triage with Python, and produced incident response documentation.
 
@@ -57,7 +58,8 @@ The environment is continuously expanded to include intrusion detection, securit
 
 # 🏗️ Current Architecture
 
-<img width="492" height="492" alt="Topology drawio" src="https://github.com/user-attachments/assets/69b869a3-846d-442b-886f-eb4f90f1ce4f" />
+<img width="492" height="492" alt="Topology drawio" src="https://github.com/user-attachments/assets/5fbc4b5c-b18e-40ba-beab-8c20fff9af3b" />
+
 
 ```
 
