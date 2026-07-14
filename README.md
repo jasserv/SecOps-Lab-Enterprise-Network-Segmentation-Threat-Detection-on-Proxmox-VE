@@ -57,10 +57,10 @@ The environment is continuously expanded to include intrusion detection, securit
 ---
 
 # 🏗️ Current Architecture
-
+```
 <img width="492" height="492" alt="Topology drawio" src="https://github.com/user-attachments/assets/5fbc4b5c-b18e-40ba-beab-8c20fff9af3b" />
 
-```
+
 ```
 
 ---
