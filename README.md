@@ -57,39 +57,8 @@ The environment is continuously expanded to include intrusion detection, securit
 
 # 🏗️ Current Architecture
 
-```
-                               INTERNET
-                                   │
-                           Home Router
-                                   │
-                            vmbr0 (WAN)
-                                   │
-                          +----------------+
-                          |    OPNsense    |
-                          | Perimeter FW   |
-                          +----------------+
-                           │            │
-             vmbr1         │            │ vmbr2
-        Attacker Zone      │           DMZ
-        172.16.1.0/24       │      10.0.0.0/24
-                           │
-                      Kali Linux
-                           │
-                     Ubuntu SIEM
-                    (10.0.0.10/24)
-                           │
-                     +---------------+
-                     |   FortiGate   |
-                     | Internal FW   |
-                     +---------------+
-                    10.0.0.2
-                    10.50.10.1
-                           │
-                    vmbr3 Corporate
-                    10.50.10.0/24
-                           │
-                     Ubuntu-FG
-                   (10.50.10.10)
+<img width="492" height="492" alt="Topology drawio" src="https://github.com/user-attachments/assets/69b869a3-846d-442b-886f-eb4f90f1ce4f" />
+
 ```
 
 ---
