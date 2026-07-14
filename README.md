@@ -110,20 +110,30 @@ Configured Manual Outbound NAT in OPNsense.
 
 ---
 
-## Static Routing
+## Static Routing Between the DMZ and Corporate Network
 
-Ubuntu SIEM could not communicate with Ubuntu-FG.
+### Issue
 
-**Root Cause**
+The Ubuntu-FG endpoint could successfully reach the Ubuntu SIEM using ICMP (ping), but TCP-based services such as **SSH (port 22)** and **Wazuh Agent registration (port 1515)** consistently failed.
 
-The Ubuntu SIEM did not have a route to the Corporate subnet.
+### Root Cause
 
-**Resolution**
+The Ubuntu SIEM did not have a routing entry for the Corporate subnet (`10.50.10.0/24`). While ICMP connectivity appeared functional, the Ubuntu SIEM was unable to return TCP response packets to the Corporate network because it did not know that the FortiGate was the next-hop router.
 
-Added a static route:
+As a result, the TCP three-way handshake could not complete, causing connection attempts to time out.
 
-- Destination: 10.50.10.0/24
-- Gateway: 10.0.0.2 (FortiGate DMZ Interface)
+### Resolution
+
+Added a static route on the Ubuntu SIEM:
+
+- **Destination Network:** `10.50.10.0/24`
+- **Gateway:** `10.0.0.2` (FortiGate DMZ Interface)
+
+### Result
+
+- ✅ SSH connectivity between the DMZ and Corporate network was restored.
+- ✅ Wazuh Agent successfully registered with the Wazuh Manager over TCP port **1515**.
+- ✅ Bidirectional communication between both network segments was fully established.
 
 Communication between the DMZ and Corporate network was successfully restored.
 
