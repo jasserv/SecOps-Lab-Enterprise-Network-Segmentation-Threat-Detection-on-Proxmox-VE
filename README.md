@@ -85,15 +85,31 @@ Current capabilities include:
 
 # ⚠ Challenges Encountered
 
-## FortiGate Firmware
+## FortiGate Firmware and Evaluation License
 
-FortiOS 8.0 repeatedly logged out after authentication.
+### Issue
 
-**Resolution**
+The initial FortiOS 8.0 VM deployment presented two issues:
 
-- Switched to the VM64 KVM image.
-- Downgraded to FortiOS 7.6.7.
+- The web management interface repeatedly logged out immediately after authentication, making administration unreliable.
+- The evaluation license had expired, preventing the firewall from forwarding traffic. As a result, hosts behind the FortiGate were unable to access external networks, and inbound connections through the firewall also failed despite correct routing and firewall policy configurations.
 
+### Root Cause
+
+The deployed FortiGate image was running an unsupported or expired evaluation version, causing both management instability and functional limitations on traffic forwarding.
+
+### Resolution
+
+- Researched the appropriate FortiGate virtual appliance for Proxmox KVM.
+- Downloaded the **FortiGate VM64 KVM** image.
+- Deployed **FortiOS 7.6.7**, which provided a stable management interface and restored expected firewall behavior under the evaluation license.
+
+### Result
+
+- ✅ Stable access to the FortiGate Web GUI.
+- ✅ Firewall routing and policy configuration functioned as expected.
+- ✅ Corporate hosts successfully accessed external networks.
+- ✅ Inbound and outbound traffic through the FortiGate was restored.
 ---
 
 ## Outbound NAT
