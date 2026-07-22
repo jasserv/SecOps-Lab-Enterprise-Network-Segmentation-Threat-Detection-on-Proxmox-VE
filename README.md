@@ -35,7 +35,7 @@ Current capabilities include:
 | Internal Firewall | FortiGate VM |
 | SIEM | Wazuh |
 | IDS | Suricata |
-| Endpoint | Ubuntu Server |
+| Endpoint | Ubuntu Server, Windows 10 |
 | Attacker | Kali Linux |
 
 # 🌐 Networks
@@ -81,7 +81,23 @@ Current capabilities include:
 
 - [x] Installed Suricata on OPNsense
 - [x] Enabled IDS service
+- [x] Enabled Eve JSON logging
+- [x] Configured Suricata Syslog output
+- [x] Installed Wazuh Agent on OPNsense
+- [x] Enrolled OPNsense into Wazuh
+- [x] Integrated firewall and Suricata logs with Wazuh
 - [x] Monitoring network traffic
+
+## Phase 5 – Endpoint Detection & Response
+
+- [x] Deployed Windows 10 endpoint
+- [x] Installed Wazuh Agent
+- [x] Installed Sysmon
+- [x] Applied SwiftOnSecurity Sysmon configuration
+- [x] Verified Sysmon event generation
+- [x] Integrated Sysmon logs into Wazuh
+- [x] Installed Invoke-AtomicRedTeam framework
+- [x] Ready for MITRE ATT&CK attack simulations
 
 # ⚠ Challenges Encountered
 
@@ -153,23 +169,59 @@ Added a static route on the Ubuntu SIEM:
 
 Communication between the DMZ and Corporate network was successfully restored.
 
+## Suricata Log Integration with Wazuh
+
+### Issue
+
+The initial approach was to forward Suricata IDS alerts from OPNsense to Wazuh using Syslog. Although Suricata was generating events, they were not being reliably ingested by Wazuh.
+
+### Resolution
+
+Instead of relying solely on Syslog forwarding:
+
+- Installed the **Wazuh Agent** on OPNsense.
+- Enrolled OPNsense as a monitored endpoint.
+- Configured the agent to collect Suricata and firewall logs directly from the firewall.
+- Verified successful log ingestion in Wazuh.
+
+### Result
+
+- ✅ Suricata alerts successfully integrated with Wazuh.
+- ✅ Centralized monitoring of firewall and IDS events.
+- ✅ More reliable log collection for security monitoring.
+
+---
+
+## Excessive Sysmon Event Noise
+
+### Issue
+
+A default Sysmon installation generated a large volume of Windows events, making it difficult to identify meaningful security activity within Wazuh.
+
+### Resolution
+
+Applied the **SwiftOnSecurity Sysmon configuration**, which filters common benign events while preserving high-value security telemetry.
+
+### Result
+
+- ✅ Reduced unnecessary log volume.
+- ✅ Improved signal-to-noise ratio.
+- ✅ Clearer and more actionable endpoint telemetry in Wazuh.
+
 # 🚀 Roadmap
-
-## Phase 5
-
-- [ ] Windows Server
-- [ ] Active Directory
-- [ ] Sysmon
-- [ ] Windows Endpoint
 
 ## Phase 6
 
-- [ ] Generate attack traffic
+- [ ] Deploy Windows Server
+- [ ] Configure Active Directory Domain Services
+- [ ] Join Windows endpoint to the domain
+- [ ] Execute Atomic Red Team attack simulations
 - [ ] Validate Wazuh detections
-- [ ] Tune Suricata rules
+- [ ] Tune Wazuh detection rules
+- [ ] Tune Suricata signatures
 - [ ] MITRE ATT&CK mapping
 - [ ] Threat hunting
-
+      
 # 📚 Learning Outcomes
 
 This project demonstrates hands-on experience with:
@@ -182,6 +234,12 @@ This project demonstrates hands-on experience with:
 - Wazuh SIEM
 - Suricata IDS
 - Troubleshooting enterprise networking
+- Endpoint Detection & Response (EDR)
+- Sysmon endpoint telemetry
+- Windows event monitoring
+- Wazuh agent deployment
+- SIEM log ingestion and correlation
+- MITRE ATT&CK attack simulation
 
 # 👨‍💻 Author
 
