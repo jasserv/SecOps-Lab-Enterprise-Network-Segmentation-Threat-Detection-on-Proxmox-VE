@@ -1,4 +1,3 @@
-<img width="554" height="552" alt="infra" src="https://github.com/user-attachments/assets/9c322720-4be4-42f1-9a1b-5b949b6c93e1" />
 # Enterprise Cybersecurity Homelab
 
 > A production-inspired cybersecurity homelab built on **Proxmox VE** featuring layered firewalls, network segmentation, virtualization, security monitoring, and intrusion detection.
